@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>To-Do List App</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      background: linear-gradient(135deg, #e3d7ff, #b3a1e6);
+      font-family: 'Poppins', sans-serif;
+      color: #4a148c;
+    }
+
+    .todo-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+      height: 100vh;
+      padding: 30px;
+    }
+
+    .todo-box {
+      width: 100%;
+      max-width: 700px;
+      background: #ffffff;
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-control {
+      background-color: #f3e8ff;
+      border: 1px solid #d1bde6;
+      color: #4a148c;
+    }
+
+    .form-control::placeholder {
+      color: #9673c4;
+    }
+
+    .form-control:focus {
+      box-shadow: 0 0 5px rgba(74, 20, 140, 0.5);
+      border: 1px solid #4a148c;
+    }
+
+    .btn-primary {
+      background: #7b1fa2;
+      border: none;
+      margin-top: 10px;
+    }
+
+    .btn-primary:hover {
+      background: #4a148c;
+    }
+
+    .task-list {
+      margin-top: 20px;
+      list-style: none;
+      padding: 0;
+      width: 100%;
+    }
+
+    .task-item {
+      background: #f3e8ff;
+      padding: 10px 15px;
+      border: 1px solid #d1bde6;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #4a148c;
+    }
+
+    .task-number {
+      margin-right: 10px;
+      font-weight: bold;
+    }
+
+    .task-text {
+      flex-grow: 1;
+      word-break: break-word;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 5px;
+    }
+
+    .btn-warning {
+      background: #ffcc80;
+      border: none;
+    }
+
+    .btn-warning:hover {
+      background: #ffb74d;
+    }
+
+    .btn-danger {
+      background: #ef9a9a;
+      border: none;
+    }
+
+    .btn-danger:hover {
+      background: #e57373;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="todo-container">
+    <div class="todo-box">
+      <h2 class="text-center">My To-Do List</h2>
+      <input type="text" id="taskInput" class="form-control mb-3" placeholder="Add a new task...">
+      <button id="addTaskBtn" class="btn btn-primary w-100">Add Task</button>
+      <ul id="taskList" class="task-list">
+        <!-- Tasks will be dynamically added here -->
+      </ul>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  
+  <script>
+    // DOM Elements
+    const taskInput = document.getElementById('taskInput');
+    const addTaskBtn = document.getElementById('addTaskBtn');
+    const taskList = document.getElementById('taskList');
+
+    // Function to renumber tasks
+    function renumberTasks() {
+      const tasks = taskList.querySelectorAll('.task-item');
+      tasks.forEach((task, index) => {
+        const taskNumber = task.querySelector('.task-number');
+        taskNumber.textContent = `${index + 1}.`;
+      });
+    }
+
+    // Add Task Function
+    function addTask() {
+      const taskText = taskInput.value.trim();
+      if (taskText === '') {
+        alert('Please enter a task!');
+        return;
+      }
+
+      // Create Task Item
+      const taskItem = document.createElement('li');
+      taskItem.className = 'task-item';
+
+      // Task Content
+      taskItem.innerHTML = `
+        <span class="task-number">${taskList.children.length + 1}.</span>
+        <span class="task-text">${taskText}</span>
+        <div class="btn-group">
+          <button class="btn btn-warning btn-sm editTask">Edit</button>
+          <button class="btn btn-danger btn-sm deleteTask">Delete</button>
+        </div>
+      `;
+
+      // Append to Task List
+      taskList.appendChild(taskItem);
+
+      // Clear Input Field
+      taskInput.value = '';
+    }
+
+    // Handle Task Actions
+    function handleTaskAction(event) {
+      const target = event.target;
+      const taskItem = target.closest('li');
+
+      if (target.classList.contains('editTask')) {
+        const taskSpan = taskItem.querySelector('.task-text');
+        const newTaskText = prompt('Edit your task:', taskSpan.textContent);
+        if (newTaskText !== null && newTaskText.trim() !== '') {
+          taskSpan.textContent = newTaskText.trim();
+        } else {
+          alert('Task cannot be empty!');
+        }
+      }
+
+      if (target.classList.contains('deleteTask')) {
+        taskItem.remove();
+        renumberTasks(); // Renumber tasks after deletion
+      }
+    }
+
+    // Event Listeners
+    addTaskBtn.addEventListener('click', addTask);
+    taskList.addEventListener('click', handleTaskAction);
+
+    // Allow adding task by pressing Enter key
+    taskInput.addEventListener('keypress', function(event) {
+      if (event.key === 'Enter') {
+        addTask();
+      }
+    });
+  </script>
+</body>
+</html>
